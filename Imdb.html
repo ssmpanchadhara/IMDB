@@ -7,6 +7,7 @@
     
 <h1>IMDB API</h1>
 <h3>Enter a movie name to search</h3>
+
 <input type="text" id="searchText" name="fname"><br><br>
 <button onclick="searchMovie(this)">search movie!!!</button>
 
@@ -30,15 +31,8 @@ function downloadImage(url) {
             let b = new Uint8Array(bytes);
             let newblob = new Blob([b], { type: 'application/pdf' });
 
-            //to open as pdf
-            /*
-            var fileURL = URL.createObjectURL(newblob);
-            var win = window.open();
-            win.document.write('<iframe src="' + fileURL + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
-            */
             let newblobUrl = window.URL.createObjectURL(newblob);
             let a = document.createElement('a');
-            a.download = url.replace(/^.*[\\\/]/, '');
             a.href = newblobUrl;
             a.download = "poster.jpeg";
             document.body.appendChild(a);
@@ -53,10 +47,6 @@ function downloadImage(url) {
 function downloadURI(element) {
 
     downloadImage(element.parentElement.getElementsByTagName("p")[0].innerHTML);
-}
-
-function imdbEndPoint(){
-    return 'https://movie-database-imdb-alternative.p.rapidapi.com/';
 }
 
 function newIMDBEndPoint(){
