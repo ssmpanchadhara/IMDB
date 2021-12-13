@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+</head>
+<body>
+    
+<h1>IMDB API</h1>
+<h3>Enter a movie name to search</h3>
+<input type="text" id="searchText" name="fname"><br><br>
+<button onclick="searchMovie(this)">search movie!!!</button>
+
+<section id="b">
+    <h2>Movie List</h2>
+    <div id="result" class="result"></div>
+</section>
+
+<script>
+
+function downloadImage(url) {
+
+    fetch(url).then(function (response) {
+		if (response.ok) {
+			return response.blob();
+		} else {
+		return Promise.reject(response);
+	}
+	}).then(function (data){
+        data.arrayBuffer().then(function (bytes){
+            let b = new Uint8Array(bytes);
+            let newblob = new Blob([b], { type: 'application/pdf' });
+
+            //to open as pdf
+            /*
+            var fileURL = URL.createObjectURL(newblob);
+            var win = window.open();
+            win.document.write('<iframe src="' + fileURL + '" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>');
+            */
+            let newblobUrl = window.URL.createObjectURL(newblob);
+            let a = document.createElement('a');
+            a.download = url.replace(/^.*[\\\/]/, '');
+            a.href = newblobUrl;
+            a.download = "poster.jpeg";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+        });
+    });
+
+}
+
+function downloadURI(element) {
+
+    downloadImage(element.parentElement.getElementsByTagName("p")[0].innerHTML);
+}
+
+function imdbEndPoint(){
+    return 'https://movie-database-imdb-alternative.p.rapidapi.com/';
+}
+
+function newIMDBEndPoint(){
+    return 'https://imdb-api.com/en/API/SearchMovie/k_9o26atx8/';
+}
+
+function searchMovie(element){
+    imdbEndPoint(document.getElementById("searchText").value);
+}
+
+function imdbEndPoint(searchString){
+    var endPoint = newIMDBEndPoint();
+    endPoint = endPoint+searchString;
+    const results = document.getElementById('result');
+    var requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+    };
+
+    fetch(endPoint,requestOptions).then(function (response) {
+		if (response.ok) {
+			return response.json();
+		} else {
+		return Promise.reject(response);
+	}
+	}).then(function (data) {
+
+		moviesList = data.results;
+
+		console.log(moviesList);
+        moviesList.forEach(movie => {
+            results.innerHTML += `
+            <div class="result" style="border-style: groove;padding:10px">
+                <h3>Movie Id : ${movie.id}</h3>
+                <h3>Movie Name: ${movie.title}</h3>
+                <h3>Movie Description: ${movie.description}</h3>
+                <button onclick="downloadURI(this)">Download poster!!!</button>
+                <!--<a href=${movie.image}>Download poster!!!</a>-->
+                <p style="visibility: hidden;">${movie.image}</p>
+            </div>
+    `
+        });
+        return;
+	});
+
+ 
+    }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+</body>
+</html>
